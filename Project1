@@ -1,0 +1,155 @@
+<ListView
+        android:id="@+id/book_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"/>
+
+<ImageView
+        android:id="@+id/book_imageview"
+        android:layout_width="80dp"
+        android:layout_height="120dp"
+        android:src="@drawable/davinci_code"/>
+
+<TextView
+        android:id="@+id/title_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="25dp"
+        android:textStyle="bold"
+        android:layout_toRightOf="@+id/book_imageview"
+        android:text="The Davinci Code"
+        android:textSize="22sp"/>
+
+<TextView
+        android:id="@+id/author_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/book_imageview"
+        android:layout_below="@+id/title_textview"
+        android:layout_marginLeft="20dp"
+        android:layout_gravity="center"
+        android:text="Dan Brown"
+        android:textSize="18sp"/>
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+package org.techgeorge.phraselist;
+
+public class Book {
+    private String bookTitle;
+    private String bookAuthor;
+    private int bookImageId;
+
+public Book(String bookTitle, String bookAuthor, int bookImageId) {
+        this.bookTitle = bookTitle;
+        this.bookAuthor = bookAuthor;
+        this.bookImageId = bookImageId;
+    }
+
+    public String getBookTitle() {
+        return bookTitle;
+    }
+
+    public String getBookAuthor() {
+        return bookAuthor;
+    }
+
+    public int getBookImageId() {
+        return bookImageId;
+    }
+}
+
+package org.techgeorge.phraselist;
+
+import android.content.res.Resources;
+import android.os.Bundle;
+import android.widget.ListView;
+import androidx.appcompat.app.AppCompatActivity;
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity {
+    private ArrayList<Book> bookList;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        bookList = new ArrayList<>();
+
+        //getting string arrays from resource
+        Resources res = getResources();
+        String[] allBooks = res.getStringArray(R.array.books);
+        String[] allAuthors = res.getStringArray(R.array.authors);
+
+        pupoluateBookList(allBooks, allAuthors);
+
+        //setting adapter and listview
+        BookAdapter adapter = new BookAdapter(getApplicationContext(),
+                R.layout.list_item, bookList);
+        ListView listview = findViewById(R.id.book_list);
+        listview.setAdapter(adapter);
+
+    }
+
+    public void pupoluateBookList(String[] books, String[] authors) {
+        bookList.add(new Book(books[0], authors[0], R.drawable.davinci_code));
+        bookList.add(new Book(books[1], authors[1], R.drawable.girl_train));
+        bookList.add(new Book(books[2], authors[2], R.drawable.harry_potter));
+        bookList.add(new Book(books[3], authors[3], R.drawable.hunder_games));
+        bookList.add(new Book(books[4], authors[4], R.drawable.lord_rings));
+        bookList.add(new Book(books[5], authors[5], R.drawable.moby_dick));
+        bookList.add(new Book(books[6], authors[6], R.drawable.mocking_bird));
+        bookList.add(new Book(books[7], authors[7], R.drawable.the_godfather));
+    }
+
+}
+
+package org.techgeorge.phraselist;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import java.util.ArrayList;
+
+public class BookAdapter extends ArrayAdapter<Book> {
+    private ArrayList<Book> bookList;
+
+    public BookAdapter(@NonNull Context context, int resource, ArrayList<Book> bookList) {
+        super(context, resource);
+        this.bookList = bookList;
+    }
+
+    @NonNull
+    @Override
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+        int phraseIndex = position;
+        if(convertView == null) {
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item,
+                    parent, false);
+        }
+
+        ImageView bookImage = convertView.findViewById(R.id.book_imageview);
+        TextView titleTextView = convertView.findViewById(R.id.title_textview);
+        TextView authorTextView = convertView.findViewById(R.id.author_textview);
+
+        bookImage.setImageResource(bookList.get(position).getBookImageId());
+        titleTextView.setText(bookList.get(position).getBookTitle());
+        authorTextView.setText(bookList.get(position).getBookAuthor());
+
+        return convertView;
+    }
+}
